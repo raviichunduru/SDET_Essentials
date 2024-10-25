@@ -14,6 +14,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import pojos.Locale;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,9 +25,10 @@ public class LocalizationTest
   ChromeDriver driver;
   ChromeOptions chromeOptions;
   DevTools devTools;
-  String actualValue;
 
-  private static final By GOOGLE_SEARCH_BUTTON = By.xpath("//div[@class='lJ9FBc']//input[@name='btnK']");
+  private static final Map<By, String> elementLocatorAndName = Map.of(
+    By.xpath("//div[@class='lJ9FBc']//input[@name='btnK']"), "GoogleSearchButton",
+    By.xpath("//div[@class='FPdoLc lJ9FBc']//input[@name='btnI']"), "ForFeelingLuckyButton");
 
   @BeforeTest()
   void setUp() {
@@ -35,13 +37,30 @@ public class LocalizationTest
   @Test(dataProvider = "getLocaleInfo")
   public void localizationTest (Locale locale) {
 
-    actualValue = changeBrowserLocale(locale)
+     changeBrowserLocale(locale)
       .changeLatitudeAndLongitude(locale)
       .openBrowser()
-      .getLocalizedNameForElement(GOOGLE_SEARCH_BUTTON);
+      .assertThatEachFieldLocalized(locale);
+  }
 
-    String expectedValue = locale.getLocalizedNameForGoogleSearchButton();
-    assertThatFieldNameIsLocalized(expectedValue, actualValue);
+  private void assertThatEachFieldLocalized(Locale locale) {
+    for (Map.Entry<By, String> entry : elementLocatorAndName.entrySet()) {
+      By locator = entry.getKey();
+      String expectedValue = getExpectedValue(locale, entry.getValue());
+      String actualValue = getActualValue(locator);
+      assertThatFieldNameIsLocalized(expectedValue, actualValue);
+    }
+  }
+
+  private String getExpectedValue(Locale locale, String fieldName) {
+    switch (fieldName) {
+      case "GoogleSearchButton":
+        return locale.getLocalizedNameForGoogleSearchButton();
+      case "ForFeelingLuckyButton":
+        return locale.getLocalizedNameForFeelingLuckyButton();
+      default:
+        throw new IllegalArgumentException("Unknown field: " + fieldName);
+    }
   }
 
   private static void assertThatFieldNameIsLocalized(String expectedValue, String actualValue) {
@@ -54,7 +73,7 @@ public class LocalizationTest
     return this;
   }
 
-  private String getLocalizedNameForElement(By by) {
+  private String getActualValue(By by) {
     return driver.findElement(by).getAttribute("value");
   }
 
@@ -72,7 +91,7 @@ public class LocalizationTest
     return this;
   }
 
-  @DataSupplier
+  @DataSupplier(runInParallel = false)
   public  StreamEx<Locale> getLocaleInfo() {
     return use(JsonReader.class)
       .withTarget(Locale.class)

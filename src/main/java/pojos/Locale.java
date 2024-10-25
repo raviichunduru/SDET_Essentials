@@ -12,4 +12,5 @@ public class Locale {
   Number latitude;
   Number longitude;
   String localizedNameForGoogleSearchButton;
+  String localizedNameForFeelingLuckyButton;
 }
