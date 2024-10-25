@@ -40,7 +40,7 @@ public class OptionalDemo {
     js.executeScript("alert('welcome');");
 
     Optional.ofNullable(ExpectedConditions.alertIsPresent().apply(chromeDriver))
-      .ifPresentOrElse(Alert::accept, () -> System.out.println("No alert present. continued with flow"));
+            .ifPresentOrElse(Alert::accept, () -> System.out.println("No alert present. continued with flow"));
 
     chromeDriver.findElement(By.xpath("//textarea[@name='q']")).sendKeys("Google");
     chromeDriver.close();

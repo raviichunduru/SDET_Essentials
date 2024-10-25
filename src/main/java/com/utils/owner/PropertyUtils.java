@@ -7,14 +7,12 @@ import java.util.Properties;
 
 public final class PropertyUtils {
     /*
-       too much of try catch block code.. even in finally where closing fis object
+       too much of try catch block code... even in finally where closing fis object
        if catch block not defined, we end up with NULL Pointer exception
     */
 
   private PropertyUtils() {
-  }
-
-  ;
+  };
 
   public static String readPropertyFile(String key) {
     Properties properties = null;
