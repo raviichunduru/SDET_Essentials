@@ -44,7 +44,7 @@ public class LocalizationTest
 
      changeBrowserLocale(locale)
       .changeLatitudeAndLongitude(locale)
-      .openBrowser()
+      .navigateToGoogleHomePage()
       .assertThatEachFieldLocalized(locale);
   }
 
@@ -72,7 +72,7 @@ public class LocalizationTest
     Assertions.assertThat(actualValue).isEqualTo(expectedValue);
   }
 
-  private LocalizationTest openBrowser() {
+  private LocalizationTest navigateToGoogleHomePage() {
     driver.manage().deleteAllCookies();
     driver.get("https://www.google.com/");
     return this;
