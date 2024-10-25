@@ -25,7 +25,7 @@ import static pages.googlehomepage.GoogleHomePageByLocator.BY_FOR_GOOGLE_SEARCH_
 import static pages.googlehomepage.GoogleHomePageFieldName.TXT_FOR_FEELING_LUCKY_BUTTON;
 import static pages.googlehomepage.GoogleHomePageFieldName.TXT_FOR_GOOGLE_SEARCH_BUTTON;
 
-public class LocalizationTestForGoogleHomePage
+public class LocalizationTest
 {
   ChromeDriver driver;
   ChromeOptions chromeOptions;
@@ -72,7 +72,7 @@ public class LocalizationTestForGoogleHomePage
     Assertions.assertThat(actualValue).isEqualTo(expectedValue);
   }
 
-  private LocalizationTestForGoogleHomePage openBrowser() {
+  private LocalizationTest openBrowser() {
     driver.manage().deleteAllCookies();
     driver.get("https://www.google.com/");
     return this;
@@ -82,14 +82,14 @@ public class LocalizationTestForGoogleHomePage
     return driver.findElement(by).getAttribute("value");
   }
 
-  private LocalizationTestForGoogleHomePage changeLatitudeAndLongitude(Locale locale) {
+  private LocalizationTest changeLatitudeAndLongitude(Locale locale) {
     devTools = driver.getDevTools();
     devTools.createSession();
     devTools.send(Emulation.setGeolocationOverride(Optional.of(locale.getLatitude()), Optional.of(locale.getLongitude()),Optional.empty()));
     return this;
   }
 
-  private LocalizationTestForGoogleHomePage changeBrowserLocale(Locale locale) {
+  private LocalizationTest changeBrowserLocale(Locale locale) {
     chromeOptions = new ChromeOptions();
     chromeOptions.addArguments(String.format("--lang=%s", locale.getLocaleName()));
     driver = new ChromeDriver(chromeOptions);
