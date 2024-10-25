@@ -10,6 +10,8 @@ import pojos.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static pages.googlehomepage.GoogleHomePageByLocator.BY_FOR_FEELING_LUCKY_BUTTON;
 import static pages.googlehomepage.GoogleHomePageByLocator.BY_FOR_GOOGLE_SEARCH_BUTTON;
 import static pages.googlehomepage.GoogleHomePageFieldName.TXT_FOR_FEELING_LUCKY_BUTTON;
@@ -31,12 +33,32 @@ public final class GooglePageLocalization {
     return INSTANCE;
   }
 
+  public GooglePageLocalization changeBrowserLocale(Locale locale) {
+    chromeOptions = new ChromeOptions();
+    chromeOptions.addArguments(String.format("--lang=%s", locale.getLocaleName()));
+    driver = new ChromeDriver(chromeOptions);
+    return this;
+  }
+
+  public GooglePageLocalization changeLatitudeAndLongitude(Locale locale) {
+    devTools = driver.getDevTools();
+    devTools.createSession();
+    devTools.send(Emulation.setGeolocationOverride(Optional.of(locale.getLatitude()), Optional.of(locale.getLongitude()),Optional.empty()));
+    return this;
+  }
+
+  public GooglePageLocalization navigateToGoogleHomePage() {
+    driver.manage().deleteAllCookies();
+    driver.get("https://www.google.com/");
+    return this;
+  }
+
   public GooglePageLocalization assertThatEachFieldLocalized(Locale locale) {
     for (Map.Entry<By, GoogleHomePageFieldName> entry : elementInfo.entrySet()) {
       By locator = entry.getKey();
       String expectedValue = getExpectedValue(locale, entry.getValue());
       String actualValue = getActualValue(locator);
-      assertThatFieldNameIsLocalized(expectedValue, actualValue);
+      assertThat(actualValue).isEqualTo(expectedValue);
     }
     return this;
   }
@@ -52,32 +74,8 @@ public final class GooglePageLocalization {
     }
   }
 
-  private static void assertThatFieldNameIsLocalized(String expectedValue, String actualValue) {
-    Assertions.assertThat(actualValue).isEqualTo(expectedValue);
-  }
-
-  public GooglePageLocalization navigateToGoogleHomePage() {
-    driver.manage().deleteAllCookies();
-    driver.get("https://www.google.com/");
-    return this;
-  }
-
   private String getActualValue(By by) {
     return driver.findElement(by).getAttribute("value");
-  }
-
-  public GooglePageLocalization changeLatitudeAndLongitude(Locale locale) {
-    devTools = driver.getDevTools();
-    devTools.createSession();
-    devTools.send(Emulation.setGeolocationOverride(Optional.of(locale.getLatitude()), Optional.of(locale.getLongitude()),Optional.empty()));
-    return this;
-  }
-
-  public GooglePageLocalization changeBrowserLocale(Locale locale) {
-    chromeOptions = new ChromeOptions();
-    chromeOptions.addArguments(String.format("--lang=%s", locale.getLocaleName()));
-    driver = new ChromeDriver(chromeOptions);
-    return this;
   }
 
   public void closeBrowser() {

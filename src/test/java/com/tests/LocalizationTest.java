@@ -3,14 +3,9 @@ package com.tests;
 import io.github.sskorol.core.DataSupplier;
 import io.github.sskorol.data.JsonReader;
 import one.util.streamex.StreamEx;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import pages.googlehomepage.GooglePageLocalization;
 import pojos.Locale;
-
-import java.util.Objects;
-
 import static io.github.sskorol.data.TestDataReader.use;
 
 public class LocalizationTest
