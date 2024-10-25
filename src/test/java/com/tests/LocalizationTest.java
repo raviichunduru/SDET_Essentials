@@ -12,6 +12,7 @@ import org.openqa.selenium.devtools.v85.emulation.Emulation;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import pages.googlehomepage.GoogleHomePageFieldName;
 import pojos.Locale;
 
 import java.util.Map;
@@ -19,6 +20,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static io.github.sskorol.data.TestDataReader.use;
+import static pages.googlehomepage.GoogleHomePageByLocator.BY_FOR_FEELING_LUCKY_BUTTON;
+import static pages.googlehomepage.GoogleHomePageByLocator.BY_FOR_GOOGLE_SEARCH_BUTTON;
+import static pages.googlehomepage.GoogleHomePageFieldName.TXT_FOR_FEELING_LUCKY_BUTTON;
+import static pages.googlehomepage.GoogleHomePageFieldName.TXT_FOR_GOOGLE_SEARCH_BUTTON;
 
 public class LocalizationTest
 {
@@ -26,16 +31,16 @@ public class LocalizationTest
   ChromeOptions chromeOptions;
   DevTools devTools;
 
-  private static final Map<By, String> elementLocatorAndName = Map.of(
-    By.xpath("//div[@class='lJ9FBc']//input[@name='btnK']"), "GoogleSearchButton",
-    By.xpath("//div[@class='FPdoLc lJ9FBc']//input[@name='btnI']"), "ForFeelingLuckyButton");
+  private static final Map<By, GoogleHomePageFieldName> elementInfo = Map.of(
+    BY_FOR_GOOGLE_SEARCH_BUTTON, TXT_FOR_GOOGLE_SEARCH_BUTTON,
+    BY_FOR_FEELING_LUCKY_BUTTON, TXT_FOR_FEELING_LUCKY_BUTTON);
 
   @BeforeTest()
   void setUp() {
   }
 
   @Test(dataProvider = "getLocaleInfo")
-  public void localizationTest (Locale locale) {
+  public void validatingLocalizationForGoogleHomePage(Locale locale) {
 
      changeBrowserLocale(locale)
       .changeLatitudeAndLongitude(locale)
@@ -44,7 +49,7 @@ public class LocalizationTest
   }
 
   private void assertThatEachFieldLocalized(Locale locale) {
-    for (Map.Entry<By, String> entry : elementLocatorAndName.entrySet()) {
+    for (Map.Entry<By, GoogleHomePageFieldName> entry : elementInfo.entrySet()) {
       By locator = entry.getKey();
       String expectedValue = getExpectedValue(locale, entry.getValue());
       String actualValue = getActualValue(locator);
@@ -52,11 +57,11 @@ public class LocalizationTest
     }
   }
 
-  private String getExpectedValue(Locale locale, String fieldName) {
+  private String getExpectedValue(Locale locale, GoogleHomePageFieldName fieldName) {
     switch (fieldName) {
-      case "GoogleSearchButton":
+      case TXT_FOR_GOOGLE_SEARCH_BUTTON:
         return locale.getLocalizedNameForGoogleSearchButton();
-      case "ForFeelingLuckyButton":
+      case TXT_FOR_FEELING_LUCKY_BUTTON:
         return locale.getLocalizedNameForFeelingLuckyButton();
       default:
         throw new IllegalArgumentException("Unknown field: " + fieldName);
